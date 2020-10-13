@@ -9,7 +9,7 @@ export const constantRoutes = [
   {
     path: '/redirect',
     component: Layout,
-    hidden: true,
+    hidden: true, // 不展示
     children: [
       {
         path: '/redirect/:path(.*)',
@@ -63,6 +63,7 @@ export const asyncRoutes = [
         path: '/book/create',
         component: () => import('@/views/book/create'),
         name: 'book',
+        hidden: true,
         meta: {
           title: '添加图书',
           icon: 'edit',
@@ -95,8 +96,12 @@ export const asyncRoutes = [
       }
     ]
   },
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // 没匹配到的路由重定向到404
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  }
 ]
 
 const createRouter = () => new Router({

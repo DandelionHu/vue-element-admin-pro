@@ -11,7 +11,6 @@ NProgress.configure({ showSpinner: false }) // 进度条配置
 const whiteList = ['/login', '/auth-redirect'] // 路由白名单
 // 路由全局守卫
 router.beforeEach(async(to, from, next) => {
-  debugger
   // 进度条开始
   NProgress.start()
 

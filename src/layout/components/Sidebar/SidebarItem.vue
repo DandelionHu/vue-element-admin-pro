@@ -1,6 +1,8 @@
 <template>
   <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
+    <template
+      v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow"
+    >
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
           <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
@@ -12,6 +14,7 @@
       <template slot="title">
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
+      <!--引用自身-->
       <sidebar-item
         v-for="child in item.children"
         :key="child.path"
@@ -57,7 +60,9 @@ export default {
     return {}
   },
   methods: {
+    // 是否只有一个子菜单要展示
     hasOneShowingChild(children = [], parent) {
+      // 过滤掉 hidden为true 的路由
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false
@@ -68,26 +73,30 @@ export default {
         }
       })
 
-      // When there is only one child router, the child router is displayed by default
+      // 路由只有一个
       if (showingChildren.length === 1) {
         return true
       }
-
-      // Show parent if there are no child router to display
+      // 没有要展示的子路由（父级路由也不展示）
       if (showingChildren.length === 0) {
+        // 赋值父级路由 并把路径置空，不展示父级路由
         this.onlyOneChild = { ... parent, path: '', noShowingChildren: true }
         return true
       }
-
+      // 路由两个以上
       return false
     },
+    // 解析路径
     resolvePath(routePath) {
       if (isExternal(routePath)) {
+        // 外链
         return routePath
       }
       if (isExternal(this.basePath)) {
+        // 基础路径是外链
         return this.basePath
       }
+      // 把一个路径或路径片段的序列解析为一个绝对路径
       return path.resolve(this.basePath, routePath)
     }
   }

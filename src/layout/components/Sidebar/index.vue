@@ -22,6 +22,7 @@
 import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
+// 加载css
 import variables from '@/styles/variables.scss'
 
 export default {
@@ -31,10 +32,12 @@ export default {
       'permission_routes',
       'sidebar'
     ]),
+    // 高亮显示
     activeMenu() {
+      // 获取当前路由
       const route = this.$route
       const { meta, path } = route
-      // if set path, the sidebar will highlight the path you set
+      // 当前路由有activeMenu
       if (meta.activeMenu) {
         return meta.activeMenu
       }
@@ -43,9 +46,11 @@ export default {
     showLogo() {
       return this.$store.state.settings.sidebarLogo
     },
+    // 颜色
     variables() {
       return variables
     },
+    // 折叠
     isCollapse() {
       return !this.sidebar.opened
     }

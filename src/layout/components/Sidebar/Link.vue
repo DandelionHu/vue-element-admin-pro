@@ -15,11 +15,13 @@ export default {
     }
   },
   computed: {
+    // 校验包不包含https
     isExternal() {
       return isExternal(this.to)
     },
     type() {
       if (this.isExternal) {
+        // 返回a标签
         return 'a'
       }
       return 'router-link'
@@ -28,6 +30,7 @@ export default {
   methods: {
     linkProps(to) {
       if (this.isExternal) {
+        // 外链
         return {
           href: to,
           target: '_blank',

@@ -2,6 +2,7 @@ import Cookies from 'js-cookie'
 
 const state = {
   sidebar: {
+    // + 转换成数值 !! 转换成布尔值
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
     withoutAnimation: false
   },
