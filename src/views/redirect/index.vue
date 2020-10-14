@@ -1,6 +1,7 @@
 <script>
 export default {
   created() {
+    // 重定向
     const { params, query } = this.$route
     const { path } = params
     this.$router.replace({ path: '/' + path, query })

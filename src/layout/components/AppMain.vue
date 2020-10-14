@@ -1,6 +1,7 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
+      <!--缓存路由-->
       <keep-alive :include="cachedViews">
         <router-view :key="key" />
       </keep-alive>

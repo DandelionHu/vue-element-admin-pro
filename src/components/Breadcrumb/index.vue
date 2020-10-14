@@ -2,8 +2,14 @@
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
       <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
-        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
-        <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
+        <span
+          v-if="item.redirect==='noRedirect'||index==levelList.length-1"
+          class="no-redirect"
+        >{{ item.meta.title }}</span>
+        <a
+          v-else
+          @click.prevent="handleLink(item)"
+        >{{ item.meta.title }}</a>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>
@@ -19,8 +25,10 @@ export default {
     }
   },
   watch: {
+    // 监听路由
     $route(route) {
-      // if you go to the redirect page, do not update the breadcrumbs
+      console.log(route)
+      // 不包含重定向路径
       if (route.path.startsWith('/redirect/')) {
         return
       }
@@ -31,17 +39,19 @@ export default {
     this.getBreadcrumb()
   },
   methods: {
+    // 生成导航
     getBreadcrumb() {
-      // only show routes with meta.title
+      // 获取matched 并过滤
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
-
+      // 判断是否是首页
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
+        // 不是首页，添加
+        matched = [{ path: '/dashboard', meta: { title: '首页' }}].concat(matched)
       }
-
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },
+    // 判断是否是首页
     isDashboard(route) {
       const name = route && route.name
       if (!name) {
@@ -49,12 +59,14 @@ export default {
       }
       return name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
     },
+    // 支持:id 方式
     pathCompile(path) {
       // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
       const { params } = this.$route
       var toPath = pathToRegexp.compile(path)
       return toPath(params)
     },
+    // 导航跳转
     handleLink(item) {
       const { redirect, path } = item
       if (redirect) {

@@ -29,13 +29,15 @@ const mutations = {
 }
 
 const actions = {
-  // user login
+  // 登录
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
+        // 设置token
         commit('SET_TOKEN', data.token)
+        // 存储到cookie
         setToken(data.token)
         resolve()
       }).catch(error => {
@@ -44,7 +46,7 @@ const actions = {
     })
   },
 
-  // get user info
+  // 获取用户信息
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
@@ -72,19 +74,19 @@ const actions = {
     })
   },
 
-  // user logout
+  // 退出登录
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
+        // 清除token
         removeToken()
+        // 重置路由
         resetRouter()
-
-        // reset visited views and cached views
+        // 清空tagsview
         // to fixed https://github.com/PanJiaChen/vue-element-admin/issues/2485
         dispatch('tagsView/delAllViews', null, { root: true })
-
         resolve()
       }).catch(error => {
         reject(error)
@@ -92,7 +94,7 @@ const actions = {
     })
   },
 
-  // remove token
+  // 清除token
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
@@ -124,7 +126,7 @@ const actions = {
 }
 
 export default {
-  namespaced: true,
+  namespaced: true, // 调用时要加文件名
   state,
   mutations,
   actions

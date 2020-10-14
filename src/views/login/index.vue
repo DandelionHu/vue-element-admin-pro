@@ -25,7 +25,8 @@
           type="text"
         />
       </el-form-item>
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <!--大小写文字提示-->
+      <el-tooltip v-model="capsTooltip" content="大写锁定打开" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -51,26 +52,27 @@
       <el-button
         :loading="loading"
         type="primary"
-        style="width:100%;margin-bottom:30px;"
+        class="width100"
         @click.native.prevent="handleLogin"
-      >Login</el-button>
+      >登录</el-button>
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
+    // 用户名校验
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+      if (!value || value.length === 0) {
+        callback(new Error('请输入用户名'))
       } else {
         callback()
       }
     }
+    // 密码校验
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error('密码不能小于6位'))
@@ -80,36 +82,41 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
+      // 校验规则
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
+      // 是否打开大写提示
       capsTooltip: false,
       loading: false,
-      redirect: undefined,
-      otherQuery: {}
+      redirect: undefined, // 重定向路径
+      otherQuery: {} // 携带参数
     }
   },
   watch: {
+    // 监听路由变化
     $route: {
       handler: function(route) {
         const query = route.query
+        console.log(query)
         if (query) {
           this.redirect = query.redirect
           this.otherQuery = this.getOtherQuery(query)
         }
       },
-      immediate: true
+      immediate: true // create的时候会加载一遍
     }
   },
   created() {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
+    // 自动对焦
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
@@ -120,10 +127,17 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    // 大写校验 native 绑定到原生input上
     checkCapslock(e) {
       const { key } = e
-      this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
+      if (key && key.length === 1) {
+        this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
+      }
+      if (key === 'CapsLock' && this.capsTooltip === true) {
+        this.capsTooltip = false
+      }
     },
+    // 显示密码
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -131,6 +145,7 @@ export default {
         this.passwordType = 'password'
       }
       this.$nextTick(() => {
+        // 自动对焦
         this.$refs.password.focus()
       })
     },
@@ -141,6 +156,7 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
+              // 路由重定向
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
@@ -148,12 +164,14 @@ export default {
               this.loading = false
             })
         } else {
-          console.log('error submit!!')
+          console.log('提交出错!!')
           return false
         }
       })
     },
+    // 获取路由参数
     getOtherQuery(query) {
+      // reduce 叠加 默认acc为空
       return Object.keys(query).reduce((acc, cur) => {
         if (cur !== 'redirect') {
           acc[cur] = query[cur]

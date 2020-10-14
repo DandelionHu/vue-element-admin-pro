@@ -12,7 +12,7 @@ export const constantRoutes = [
     hidden: true, // 不展示
     children: [
       {
-        path: '/redirect/:path(.*)',
+        path: '/redirect/:path(.*)', // 动态路由
         component: () => import('@/views/redirect/index')
       }
     ]
@@ -43,10 +43,14 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [
       {
-        path: 'dashboard',
+        path: '/dashboard',
         component: () => import('@/views/dashboard/index'),
-        name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        name: 'dashboard',
+        meta: {
+          title: '首页',
+          icon: 'dashboard',
+          affix: true // 始终附着在tagview上
+        }
       }
     ]
   }
@@ -57,16 +61,28 @@ export const asyncRoutes = [
     path: '/book',
     component: Layout,
     redirect: '/book/create',
-    roles: ['admin'],
+    name: 'book',
+    meta: {
+      title: '图书管理',
+      icon: 'edit',
+      roles: ['admin']
+    },
     children: [
       {
         path: '/book/create',
         component: () => import('@/views/book/create'),
-        name: 'book',
-        hidden: true,
+        name: 'bookCreate',
         meta: {
           title: '添加图书',
-          icon: 'edit',
+          roles: ['admin']
+        }
+      },
+      {
+        path: '/book/bookList',
+        component: () => import('@/views/book/bookList'),
+        name: 'bookList',
+        meta: {
+          title: '图书列表',
           roles: ['admin']
         }
       }
@@ -78,7 +94,7 @@ export const asyncRoutes = [
     redirect: 'noRedirect',
     name: 'ErrorPages',
     meta: {
-      title: 'Error Pages',
+      title: '错误页面',
       icon: '404'
     },
     children: [
@@ -112,7 +128,7 @@ const createRouter = () => new Router({
 
 const router = createRouter()
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+// 重置路由: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
